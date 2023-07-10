@@ -54,28 +54,25 @@ class Story:
         self.construct_first_run_scene(answer_dict)
 
     def construct_first_run_scene(self, answer_dict: dict):
-        story_text = self.original_text
-
         # skip constructing the first scene
         # construct the second scene
-        index2 = story.utils.non_precise_locate(story_text, answer_dict['division2'])
         choice2 = Choice([answer_dict['action2'], answer_dict['alternative3'], answer_dict['alternative4']])
         new_scene = Scene(
             last_choice=answer_dict['action1'],
             history_scene_index_list=[self.current_scene_index],
-            story_clip=story_text[:index2],
-            sequence=[Narration(story_text[:index2]), choice2]
+            story_clip=answer_dict['clip1'],
+            sequence=[Narration(answer_dict['clip1']), choice2]
         )
         self.scenes.append(new_scene)
 
         # construct the third scene
-        index3 = story.utils.non_precise_locate(story_text, answer_dict['division3'])
+        index2 = len(answer_dict['clip1'])
         choice3 = Choice([answer_dict['action3'], answer_dict['alternative5'], answer_dict['alternative6']])
         new_scene2 = Scene(
             last_choice=answer_dict['action2'],
             history_scene_index_list=[self.current_scene_index, self.scenes.index(new_scene)],
-            story_clip=story_text[index2:index3],
-            sequence=[Narration(story_text[index2:index3]), choice3]
+            story_clip=answer_dict['clip2'][index2:],
+            sequence=[Narration(answer_dict['clip2'][index2:]), choice3]
         )
         self.scenes.append(new_scene2)
 

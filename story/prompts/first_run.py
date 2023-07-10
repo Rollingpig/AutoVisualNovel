@@ -19,13 +19,6 @@ question_dict = {
                "You should only write the first action here.",
     "action2": "You should only write the second action here.",
     "action3": "You should only write the third action here.",
-    "division2": "Locate the second action in the story and"
-                 "return a short text clip suggesting the character did that action."
-                 "The text clip should be cut from original text without any modifications/additions/remove. "
-                 "It does not have to be a complete sentence. "
-                 "But the text proving the action has been executed should be just completely included in the clip.",
-    "division3": "Locate the third action in the story and"
-                 "return a short text clip suggesting the character did that action.",
     "alternative3": "Provide two alternative choices when the main character took the second action. "
                     "Reply the answer using verb form like 'hide inside a cabinet to sleep'. "
                     "You should only write the first alternative here."

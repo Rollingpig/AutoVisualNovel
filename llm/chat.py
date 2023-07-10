@@ -3,10 +3,9 @@ import openai
 from llm.base import ChatSequence, Message
 
 
-def chat_with_gpt(chat_sequence: ChatSequence) -> (str, ChatSequence):
+def chat_with_gpt(chat_sequence: ChatSequence, llm_model="gpt-4") -> (str, ChatSequence):
     response = openai.ChatCompletion.create(
-        # model="gpt-3.5-turbo",
-        model="gpt-4",
+        model=llm_model,
         messages=chat_sequence.raw()
     )
 
@@ -20,7 +19,7 @@ def chat_with_gpt(chat_sequence: ChatSequence) -> (str, ChatSequence):
         chat_sequence.append(Message("assistant", content))
         chat_sequence.append(Message("user", "please continue"))
         response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
+            model=llm_model,
             messages=chat_sequence.raw()
         )
         content = response['choices'][0]['message']['content']

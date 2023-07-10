@@ -10,12 +10,30 @@ def first_run_qa(story_text: str) -> dict:
     prompt = prompt_from_story_and_qa_dict(story_text, first_run.question_dict)
     response_str = get_response_from_llm(prompt)
     answer_dict = parse_answer(response_str)
+
+    prompt_split_2 = prompt_story_split(story_text, answer_dict['action2'])
+    response_str_2 = get_response_from_llm(prompt_split_2, llm_model="gpt-3.5-turbo")
+    answer_dict['clip1'] = response_str_2
+
+    prompt_split_3 = prompt_story_split(story_text, answer_dict['action3'])
+    response_str_3 = get_response_from_llm(prompt_split_3, llm_model="gpt-3.5-turbo")
+    answer_dict['clip2'] = response_str_3
+
+    # prompt_personality = prompt_persona(
+    #     answer_dict['character_name'], answer_dict['character_personality'], answer_dict['personality_antonym'])
+    # response_str_personality = get_response_from_llm(prompt_personality, llm_model="gpt-3.5-turbo")
+    # answer_dict['personality_spectrum_1'] = response_str_personality.split("---")[0]
+    # answer_dict['personality_spectrum_2'] = response_str_personality.split("---")[1]
+    # answer_dict['personality_spectrum_3'] = response_str_personality.split("---")[2]
+    # answer_dict['personality_spectrum_4'] = response_str_personality.split("---")[3]
+    # answer_dict['personality_spectrum_5'] = response_str_personality.split("---")[4]
+
     return answer_dict
 
 
 def later_run_qa(history_stories: str, choice: str, character: Character, element: str) -> dict:
     prompt = prompt_from_story_and_qa_dict(
-                history_stories, create_scene.get_question_dict(choice, character, element))
+        history_stories, create_scene.get_question_dict(choice, character, element))
     response_str = get_response_from_llm(prompt)
     answer_dict = parse_answer(response_str)
     return answer_dict
@@ -56,14 +74,37 @@ def prompt_from_story_and_qa_dict(story: str, question_dictionary: dict) -> str:
     return prompt
 
 
-def get_response_from_llm(prompt: str) -> str:
+def prompt_story_split(story: str, split: str) -> str:
+    # read the prompt from file
+    with open("story/prompts/story_split.txt", "r") as f:
+        prompt = f.read()
+
+    # replace the placeholder with the story
+    prompt = prompt.replace("{{story}}", story)
+    prompt = prompt.replace("{{splitEvent}}", split)
+    return prompt
+
+
+def prompt_persona(character_name: str, persona1: str, persona2: str) -> str:
+    # read the prompt from file
+    with open("story/prompts/personality.txt", "r") as f:
+        prompt = f.read()
+
+    # replace the placeholder with the story
+    prompt = prompt.replace("{{character}}", character_name)
+    prompt = prompt.replace("{{persona1}}", persona1)
+    prompt = prompt.replace("{{persona2}}", persona2)
+    return prompt
+
+
+def get_response_from_llm(prompt: str, llm_model='gpt-4') -> str:
     # print(prompt)
 
     chat_seq = ChatSequence()
     chat_seq.append(Message(role="system",
                             content="You are an AI assistant that understands stories."))
     chat_seq.append(Message(role="user", content=prompt))
-    result_str, chat_seq = chat_with_gpt(chat_seq)
+    result_str, chat_seq = chat_with_gpt(chat_seq, llm_model=llm_model)
 
     # if there is no directory named 'debug', create one
     if not os.path.exists("debug"):
