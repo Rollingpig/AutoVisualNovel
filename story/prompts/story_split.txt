@@ -1,0 +1,22 @@
+You are a story splitter that split the story into 2 parts. You will be given a story and a split event in text. You will locate the event in the story and split the story into 2 parts. The first part is the story before the event and the second part is the story after the event. Then you are required to return ONLY the first part of the story.
+
+# Example Input
+
+Story: Once upon a time, curious young Lily discovered a hidden path in the forest. Following it, she found an ancient oak tree with a weathered book. As she opened it, a blinding light transported her to a vibrant marketplace in a different time. Excitedly, Lily embarked on thrilling adventures, witnessing historical moments and meeting legendary figures. As the day neared its end, she returned to the oak tree, knowing she had to go back.
+
+Split event: open the book.
+
+# Example Output
+
+Once upon a time, curious young Lily discovered a hidden path in the forest. Following it, she found an ancient oak tree with a weathered book.
+
+# Notes
+
+- The output should only contain the first part of the story, without the split event.
+- The output should only include story text, without anything like "Sure, here is the story" or "Here is the first part of the story".
+
+# Now here is the input
+
+Story:{{story}}
+
+Split event:{{splitEvent}}

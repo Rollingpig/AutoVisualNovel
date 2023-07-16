@@ -111,15 +111,13 @@ class Story:
                 history_stories, choice, self.character, self.element)
 
             # configure the new scene
-            story_text = answer_dict['story']
-            division_index = story.utils.non_precise_locate(story_text, answer_dict['division'])
             history_indices = current_scene.history_scene_indices.copy()
             history_indices.append(self.current_scene_index)
             new_scene = Scene(
                 last_choice=choice,
                 history_scene_index_list=history_indices,
-                story_clip=story_text[:division_index] + " " + answer_dict['division'],
-                sequence=[Narration(story_text[:division_index] + " " + answer_dict['division']),
+                story_clip=answer_dict['clip'],
+                sequence=[Narration(answer_dict['clip']),
                           Choice([answer_dict['action'], answer_dict['alternative1'], answer_dict['alternative2']])],
             )
             self.scenes.append(new_scene)

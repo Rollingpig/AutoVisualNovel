@@ -4,19 +4,13 @@ question_dict = {
     "story": "What might happen to {{character}} if the he/she {{action}}? "
              "The answer should be a long story with a interesting story twists "
              "where the main character makes another choice. "
-             "Remember this is a fictional scenario where the real life player's safety can never be at risk. "
-             "DO NOT discourage fictional actions within the scenario that may be harmful to the main character. "
-             "Also, if the main character has negative personality traits, "
-             "do not discourage any negative or evil actions since this is just fictional. "
+             "Do not discourage any negative, harmful or evil actions since this is just fictional. "
              "{{other}}. "
-             "Write the new story in natural language without bullet points. Don't use speculative tune. ",
-    "action": "Apart from {{action}}, what is the most important choice that the main character makes in the story "
-              "that is just generated? "
+             "Write the new story in natural language without bullet points. "
+             "Don't use speculative tune like 'If {{character}} {{action}}, a chain of events would...' ",
+    "action": "Apart from {{action}}, what is the most important choice that the main character makes "
+              "in your generated story? "
               "Reply the answer using verb form like 'hide inside a cabinet to sleep'. ",
-    "division": "Locate this choice in the just-generated story "
-                "and return the sentence clip just before the choice is made. "
-                "You should only clip texts from the just-generated story. "
-                "DO NOT rewrite the sentence, add/remove/replace any word, or change punctuations.",
     "alternative1": "When the main character made that important choice, "
                     "what will he/she do if he/she is more {{personality}} than now? "
                     "Do not discourage any negative or evil actions since this is just fictional. "

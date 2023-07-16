@@ -12,7 +12,7 @@ def first_run_qa(story_text: str) -> dict:
     answer_dict = parse_answer(response_str)
 
     prompt_split_2 = prompt_story_split(story_text, answer_dict['action2'])
-    response_str_2 = get_response_from_llm(prompt_split_2, llm_model="gpt-3.5-turbo")
+    response_str_2 = get_response_from_llm(prompt_split_2, llm_model="gpt-4")
     answer_dict['clip1'] = response_str_2
 
     prompt_split_3 = prompt_story_split(story_text, answer_dict['action3'])
@@ -34,8 +34,13 @@ def first_run_qa(story_text: str) -> dict:
 def later_run_qa(history_stories: str, choice: str, character: Character, element: str) -> dict:
     prompt = prompt_from_story_and_qa_dict(
         history_stories, create_scene.get_question_dict(choice, character, element))
-    response_str = get_response_from_llm(prompt)
+    response_str = get_response_from_llm(prompt, llm_model="gpt-4")
     answer_dict = parse_answer(response_str)
+
+    prompt_split = prompt_story_split(answer_dict['story'], answer_dict['action'])
+    response_str = get_response_from_llm(prompt_split, llm_model="gpt-3.5-turbo")
+    answer_dict['clip'] = response_str
+
     return answer_dict
 
 
