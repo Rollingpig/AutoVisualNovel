@@ -6,11 +6,11 @@ from story.base import Story
 def init_openai_key():
     # read openAI key from txt file, if file is not found, prompt for key
     try:
-        with open('openai_key.txt', 'r') as f:
+        with open('openai.key', 'r') as f:
             openai_key = f.read()
     except FileNotFoundError:
         openai_key = input("Please enter your openAI key: ")
-        with open('openai_key.txt', 'w') as f:
+        with open('openai.key', 'w') as f:
             f.write(openai_key)
 
     # set openAI key
