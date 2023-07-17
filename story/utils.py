@@ -1,15 +1,17 @@
-import os
-
-from llm.base import ChatSequence, Message
-from llm.chat import chat_with_gpt
+from llm.chat import get_response_from_llm
 from story.character import Character
 from story.prompts import first_run, create_scene
 
 
 def first_run_qa(story_text: str) -> dict:
     prompt = prompt_from_story_and_qa_dict(story_text, first_run.question_dict)
-    response_str = get_response_from_llm(prompt)
-    answer_dict = parse_answer(response_str)
+
+    answer_dict = {}
+    repetition_count = 0
+    while answer_dict == {} and repetition_count < 5:
+        response_str = get_response_from_llm(prompt, llm_model="palm")
+        answer_dict = parse_answer(response_str)
+        repetition_count += 1
 
     prompt_split_2 = prompt_story_split(story_text, answer_dict['action2'])
     response_str_2 = get_response_from_llm(prompt_split_2, llm_model="gpt-4")
@@ -34,8 +36,13 @@ def first_run_qa(story_text: str) -> dict:
 def later_run_qa(history_stories: str, choice: str, character: Character, element: str) -> dict:
     prompt = prompt_from_story_and_qa_dict(
         history_stories, create_scene.get_question_dict(choice, character, element))
-    response_str = get_response_from_llm(prompt, llm_model="gpt-4")
-    answer_dict = parse_answer(response_str)
+
+    answer_dict = {}
+    repetition_count = 0
+    while answer_dict == {} and repetition_count < 5:
+        response_str = get_response_from_llm(prompt, llm_model="palm")
+        answer_dict = parse_answer(response_str)
+        repetition_count += 1
 
     prompt_split = prompt_story_split(answer_dict['story'], answer_dict['action'])
     response_str = get_response_from_llm(prompt_split, llm_model="gpt-3.5-turbo")
@@ -49,9 +56,12 @@ def parse_answer(response_str: str) -> dict:
     try:
         response_dict = eval(response_str)
     except Exception as e:
-        print(response_str)
-        print("The response_str cannot be converted to a dictionary!")
-        return {}
+        try:
+            response_dict = eval(response_str[response_str.find('{'):response_str.rfind('}') + 1])
+        except Exception as e:
+            print(response_str)
+            print("The response_str cannot be converted to a dictionary!")
+            return {}
 
     # iterate through the 'QA' list
     # construct a new dictionary where the key is the 'key' and the value is the 'answer'
@@ -100,26 +110,6 @@ def prompt_persona(character_name: str, persona1: str, persona2: str) -> str:
     prompt = prompt.replace("{{persona1}}", persona1)
     prompt = prompt.replace("{{persona2}}", persona2)
     return prompt
-
-
-def get_response_from_llm(prompt: str, llm_model='gpt-4') -> str:
-    # print(prompt)
-
-    chat_seq = ChatSequence()
-    chat_seq.append(Message(role="system",
-                            content="You are an AI assistant that understands stories."))
-    chat_seq.append(Message(role="user", content=prompt))
-    result_str, chat_seq = chat_with_gpt(chat_seq, llm_model=llm_model)
-
-    # if there is no directory named 'debug', create one
-    if not os.path.exists("debug"):
-        os.makedirs("debug")
-
-    # save result_str to file, if there exists a file with the same name, append the result_str to the file
-    with open("debug/result_log.txt", "a") as f:
-        f.write(result_str + "\n")
-
-    return result_str
 
 
 def remove_punctuation(text: str) -> str:
