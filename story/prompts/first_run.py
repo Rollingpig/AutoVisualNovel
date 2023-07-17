@@ -16,7 +16,4 @@ question_dict = {
                     "The first alternative should be different from the second action.",
     "alternative4": "You should only write the second alternative here."
                     "The second alternative should be different from the second action.",
-    "alternative5": "Provide two alternative choices when the main character took the third action. "
-                    "You should only write the first alternative here.",
-    "alternative6": "You should only write the second alternative here.",
 }

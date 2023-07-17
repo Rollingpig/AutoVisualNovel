@@ -9,7 +9,7 @@ def first_run_qa(story_text: str) -> dict:
     answer_dict = {}
     repetition_count = 0
     while answer_dict == {} and repetition_count < 5:
-        response_str = get_response_from_llm(prompt, llm_model="palm")
+        response_str = get_response_from_llm(prompt, llm_model="gpt-4")
         answer_dict = parse_answer(response_str)
         repetition_count += 1
 
@@ -21,15 +21,6 @@ def first_run_qa(story_text: str) -> dict:
     response_str_3 = get_response_from_llm(prompt_split_3, llm_model="gpt-3.5-turbo")
     answer_dict['clip2'] = response_str_3
 
-    # prompt_personality = prompt_persona(
-    #     answer_dict['character_name'], answer_dict['character_personality'], answer_dict['personality_antonym'])
-    # response_str_personality = get_response_from_llm(prompt_personality, llm_model="gpt-3.5-turbo")
-    # answer_dict['personality_spectrum_1'] = response_str_personality.split("---")[0]
-    # answer_dict['personality_spectrum_2'] = response_str_personality.split("---")[1]
-    # answer_dict['personality_spectrum_3'] = response_str_personality.split("---")[2]
-    # answer_dict['personality_spectrum_4'] = response_str_personality.split("---")[3]
-    # answer_dict['personality_spectrum_5'] = response_str_personality.split("---")[4]
-
     return answer_dict
 
 
@@ -40,13 +31,17 @@ def later_run_qa(history_stories: str, choice: str, character: Character, elemen
     answer_dict = {}
     repetition_count = 0
     while answer_dict == {} and repetition_count < 5:
-        response_str = get_response_from_llm(prompt, llm_model="palm")
+        response_str = get_response_from_llm(prompt, llm_model="gpt-4")
         answer_dict = parse_answer(response_str)
         repetition_count += 1
 
-    prompt_split = prompt_story_split(answer_dict['story'], answer_dict['action'])
-    response_str = get_response_from_llm(prompt_split, llm_model="gpt-3.5-turbo")
-    answer_dict['clip'] = response_str
+    try:
+        prompt_split = prompt_story_split(answer_dict['story'], answer_dict['action'])
+        response_str = get_response_from_llm(prompt_split, llm_model="gpt-3.5-turbo")
+        answer_dict['clip'] = response_str
+    except KeyError:
+        print(answer_dict)
+        raise KeyError
 
     return answer_dict
 
@@ -100,50 +95,19 @@ def prompt_story_split(story: str, split: str) -> str:
     return prompt
 
 
-def prompt_persona(character_name: str, persona1: str, persona2: str) -> str:
+def prompt_dialogue(story: str, character: Character) -> str:
     # read the prompt from file
-    with open("story/prompts/personality.txt", "r") as f:
+    with open("story/prompts/dialogue.txt", "r") as f:
         prompt = f.read()
 
     # replace the placeholder with the story
-    prompt = prompt.replace("{{character}}", character_name)
-    prompt = prompt.replace("{{persona1}}", persona1)
-    prompt = prompt.replace("{{persona2}}", persona2)
+    prompt = prompt.replace("{{story}}", story)
+    prompt = prompt.replace("{{character}}", character.name)
+    prompt = prompt.replace("{{personality}}", character.personality)
     return prompt
 
 
-def remove_punctuation(text: str) -> str:
-    text = text.replace('.', ' ')
-    text = text.replace(',', ' ')
-    text = text.replace('?', ' ')
-    text = text.replace('!', ' ')
-    text = text.replace(';', ' ')
-    text = text.replace(':', ' ')
-    text = text.replace('\'', ' ')
-    text = text.replace('\"', ' ')
-    text = text.replace('(', ' ')
-    text = text.replace(')', ' ')
-    text = text.replace('-', ' ')
-    text = text.replace('_', ' ')
-    return text
-
-
-def non_precise_locate(text: str, query_str: str):
-    """
-    choose first words of query_str, and find its location in text
-    # TODO: find a better way to locate query_str in text
-    """
-    query_str_list = query_str.split()
-    query_str_list = query_str_list[:min(10, len(query_str_list))]
-    query_str = ' '.join(query_str_list)
-
-    # locate the query_str in text, ignore case and punctuation
-    new_text = text.lower()
-    query_str = query_str.lower()
-    new_text = remove_punctuation(new_text)
-    query_str = remove_punctuation(query_str)
-
-    index = new_text.find(query_str)
-    if index == -1:
-        raise ValueError("Cannot find query_str in text!")
-    return index
+def dialogue_task(story: str, character: Character) -> str:
+    prompt = prompt_dialogue(story, character)
+    response_str = get_response_from_llm(prompt, llm_model="gpt-3.5-turbo")
+    return response_str

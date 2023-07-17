@@ -2,7 +2,8 @@ from dataclasses import field
 
 import story.utils
 from story.character import Character
-from story.playobject import Narration, Choice, Scene
+from story.playobject import Choice
+from story.scene import Scene
 
 
 class Story:
@@ -23,16 +24,47 @@ class Story:
         self.scenes = []
 
     def play(self):
-        print("-" * 30)
+
+        scene = self.scenes[self.current_scene_index]
 
         # display the character if it is the first scene
-        if self.current_scene_index == 0:
+        if self.current_scene_index == 0 and scene.current_playing_index == 0:
             self.character.display()
 
-        # display current scene
-        scene = self.scenes[self.current_scene_index]
-        for play_object in scene.sequence:
-            play_object.display()
+        # play current scene
+        scene.play()
+
+    def receive_input(self, input_str: str) -> bool:
+        """
+        Receive input from the user
+        """
+        # get the current scene
+        current_scene = self.scenes[self.current_scene_index]
+
+        # get the last play object
+        last_play_object = current_scene.sequence[current_scene.current_playing_index - 1]
+
+        # if the last play object is a Choice object
+        if isinstance(last_play_object, Choice):
+
+            # if choice is neither 'q' nor an integer, prompt for choice again
+            while input_str != 'q' and not input_str.isdigit():
+                input_str = input("Your input should be an integer from 1 to 3, or 'q', please try again: ")
+
+            # if choice is 'q', quit the game
+            if input_str == 'q':
+                return False
+            else:
+                # get the choice index
+                choice_index = int(input_str)
+                # generate a new scene from the choice
+                self.generate_scene_from_choice(choice_index)
+                # play the new scene
+                self.play()
+                return True
+        else:
+            self.play()
+            return True
 
     def init_understand(self):
         """
@@ -51,30 +83,16 @@ class Story:
         self.character = Character(answer_dict)
 
         # construct scenes
-        self.construct_first_run_scene(answer_dict)
-
-    def construct_first_run_scene(self, answer_dict: dict):
-        # skip constructing the first scene
-        # construct the second scene
-        choice2 = Choice([answer_dict['action2'], answer_dict['alternative3'], answer_dict['alternative4']])
+        # but skip constructing the first scene
+        # only construct the second scene
         new_scene = Scene(
             last_choice=answer_dict['action1'],
             history_scene_index_list=[self.current_scene_index],
             story_clip=answer_dict['clip1'],
-            sequence=[Narration(answer_dict['clip1']), choice2]
+            choice=Choice([answer_dict['action2'], answer_dict['alternative3'], answer_dict['alternative4']]),
+            character=self.character
         )
         self.scenes.append(new_scene)
-
-        # construct the third scene
-        index2 = len(answer_dict['clip1'])
-        choice3 = Choice([answer_dict['action3'], answer_dict['alternative5'], answer_dict['alternative6']])
-        new_scene2 = Scene(
-            last_choice=answer_dict['action2'],
-            history_scene_index_list=[self.current_scene_index, self.scenes.index(new_scene)],
-            story_clip=answer_dict['clip2'][index2:],
-            sequence=[Narration(answer_dict['clip2'][index2:]), choice3]
-        )
-        self.scenes.append(new_scene2)
 
     def generate_scene_from_choice(self, choice_index: int):
         """
@@ -117,8 +135,8 @@ class Story:
                 last_choice=choice,
                 history_scene_index_list=history_indices,
                 story_clip=answer_dict['clip'],
-                sequence=[Narration(answer_dict['clip']),
-                          Choice([answer_dict['action'], answer_dict['alternative1'], answer_dict['alternative2']])],
+                choice=Choice([answer_dict['action'], answer_dict['alternative1'], answer_dict['alternative2']]),
+                character=self.character
             )
             self.scenes.append(new_scene)
             self.current_scene_index = self.scenes.index(new_scene)

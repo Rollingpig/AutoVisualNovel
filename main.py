@@ -10,7 +10,7 @@ def read_story_from_file() -> str:
 
     choice = input(f"Which story seed do you want (1 to {len(data_files)})? type 'r' to random: ")
     # if choice is neither 'q' nor an integer, prompt for choice again
-    while choice != 'q' and not choice.isdigit():
+    while choice != 'q' and choice != 'r' and not choice.isdigit():
         choice = input(f"Your input should be an integer from 1 to {len(data_files)}, or 'r', please try again: ")
 
     if choice == 'r':
@@ -35,21 +35,20 @@ def main():
     story_txt = read_story_from_file()
 
     # initialize story
-    print("Initializing story...")
+    print("Initializing story...It takes about 1-2 minutes.")
     story = Story(story_txt)
     story.init_understand()
+
+    choice = input("Now the story begin. Press Enter to continue. "
+                   "Or type the index of the choice you want to make, type 'q' to quit: ")
+    if choice == 'q':
+        return
+
     story.play()
-
-    # get choice from user
-    choice = input("Please type the index of the choice you want to make, type 'q' to quit: ")
-    while choice != 'q':
-        story.generate_scene_from_choice(int(choice))
-        story.play()
-        choice = input("Please type the index of the choice you want to make, type 'q' to quit: ")
-
-        # if choice is neither 'q' nor an integer, prompt for choice again
-        while choice != 'q' and not choice.isdigit():
-            choice = input("Your input should be an integer from 1 to 3, or 'q', please try again: ")
+    response = True
+    while response:
+        choice = input("")
+        response = story.receive_input(choice)
 
 
 if __name__ == '__main__':

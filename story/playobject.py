@@ -18,11 +18,23 @@ class Narration(PlayObject):
 
 
 class Environment(PlayObject):
-    pass
+    def __init__(self, raw: str = ""):
+        self.raw = raw
+
+    def display(self):
+        print(f"[Environment]: {self.raw}")
 
 
 class Dialogue(PlayObject):
-    pass
+    character: str = ""
+    content: str = ""
+
+    def __init__(self, character: str = "", content: str = ""):
+        self.character = character
+        self.content = content
+
+    def display(self):
+        print(f"[{self.character}]: {self.content}")
 
 
 class Choice(PlayObject):
@@ -40,33 +52,3 @@ class Choice(PlayObject):
         print("What shall the character do? : ")
         for i in range(len(self.content)):
             print(f"{i + 1}. {self.content[i]}")
-
-
-class Scene:
-    # TODO: construct dialogue and environment from story clip, conditioned on character personalities
-    # TODO: also try using GPT-3.5 instead of GPT-4
-
-    # the last choice made by the user
-    last_choice = ""
-
-    # history scene index list
-    history_scene_indices = []
-
-    # story clip
-    story_clip = ""
-
-    # sequence of PlayObjects, including Narration, Dialogue, Environment, Choice
-    sequence: list[PlayObject] = field(default_factory=list)
-
-    def __init__(self, last_choice: str = "", history_scene_index_list: list[int] = None,
-                 story_clip: str = "", sequence: list[PlayObject] = None):
-        if last_choice != "":
-            self.last_choice = last_choice
-        if history_scene_index_list is not None:
-            self.history_scene_indices = history_scene_index_list
-        if story_clip != "":
-            self.story_clip = story_clip
-        if sequence is not None:
-            self.sequence = sequence
-        else:
-            self.sequence = []

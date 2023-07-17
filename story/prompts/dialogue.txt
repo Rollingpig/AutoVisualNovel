@@ -1,0 +1,16 @@
+You are a play writer who writes a scene, given the main character and the story plot. The main character is {{character}}. Its personality is {{personality}}. In this scene, the story plot is:
+ {{story}}
+
+You should add necessary characters according to the story plot. Please follow the format in the example below:
+
+# Example
+[Scene]
+* Narrator: Enter Sampson and Gregory, with Swords and Bucklers, of the House of Capulet.
+* Environment: the House of Capulet.
+* Sampson: Is the Law of our side, if I say I?
+* Gregory: No.
+* Sampson: No sir, I do not bite my Thumbe at you sir: but I bite my Thumbe sir.
+* Gregory: Do you quarrell sir?
+[End Scene]
+
+Remember, your play should (1) include all that happened in the given story; (2) do not add new stories.
