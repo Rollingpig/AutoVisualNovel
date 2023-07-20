@@ -1,5 +1,12 @@
 import openai
-import google.generativeai as palm
+
+HAS_PALM = True
+# if the palm package is not installed, ignore it
+try:
+    import google.generativeai as palm
+except ImportError:
+    HAS_PALM = False
+    pass
 
 
 def init_openai_key():
@@ -35,4 +42,5 @@ def init_palm_key():
 
 def init_keys():
     init_openai_key()
-    init_palm_key()
+    if HAS_PALM:
+        init_palm_key()
