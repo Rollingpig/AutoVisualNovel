@@ -39,10 +39,12 @@ def main():
     story = Story(story_txt)
     story.init_understand()
 
-    choice = input("Now the story begin. Press Enter to continue. "
+    choice = input("Now the story begin. Press Enter to continue.\n"
                    "Or type the index of the choice you want to make, type 'q' to quit: ")
     if choice == 'q':
         return
+
+    print("-" * 20)
 
     story.play()
     response = True
